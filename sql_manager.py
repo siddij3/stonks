@@ -36,6 +36,12 @@ def connect():
 def impliedopen_table():
     return "impliedopen"
 
+def markets_table():
+    return "markets"
+
+def quotes_table():
+    return "markets"
+
 def check_tables(engine, table):
     isTable = False
 
