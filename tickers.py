@@ -12,6 +12,7 @@ from sql_manager import check_tables
 from sql_manager import connect
 import re
 import sql_manager
+import time
 
 
 
@@ -48,7 +49,7 @@ def getquote(soup):
     if a == None:
         return 0
     
-    print(quote)
+    print(a)
     quote = re.findall(r'[\d]*[.][\d]+', str(a))[-1]
     return quote
 
@@ -78,8 +79,8 @@ if __name__ == "__main__":
 
         dict_quotes[tic] = quote 
 
- 
-    # df = pd.DataFrame([tickers, markets], columns=["tickers","markets"])
+        time.sleep(10)
+
     table = {
          "ticker": tickers,
          "market": markets
