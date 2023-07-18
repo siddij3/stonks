@@ -33,23 +33,22 @@ def getmarket(soup):
     a = soup.find('meta', attrs={'name': 'exchange'})
 
     exchange_content = a.get('content') if a else None
-    print(exchange_content)
 
     if exchange_content == None:
         return 0
-     
+    
+    print(exchange_content)
     market = exchange_content.split(" ")[1:]
     market = ' '.join(market)
     return market
 
 def getquote(soup):
-
-
-    
     a = soup.find_all("h2", class_="intraday__price")
+
     if a == None:
         return 0
     
+    print(quote)
     quote = re.findall(r'[\d]*[.][\d]+', str(a))[-1]
     return quote
 
@@ -63,7 +62,7 @@ if __name__ == "__main__":
     markets = []
     tickers = []
     
-    shortend_list = ticker_list[600: 700]
+    shortend_list = ticker_list
 
     for tic in shortend_list:
         if '^' in tic or '/' in tic:
