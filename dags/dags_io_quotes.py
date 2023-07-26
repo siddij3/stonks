@@ -2,8 +2,7 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-
-from libs.af_logins import DATASET_ID
+from airflow.operators.bash import BashOperator
 
 from airflow.providers.google.cloud.operators.bigquery import (
     BigQueryCreateEmptyDatasetOperator,
@@ -35,6 +34,8 @@ def get_io():
     from bs4 import BeautifulSoup
     from pytz import timezone
     import pandas as pd
+    import libs.af_logins as logins
+
 
     # Randomize the numbers so it doesn't get repetitive
     response_dow = requests.get(url=urls.url_dow, headers=headers)
@@ -82,9 +83,8 @@ def get_io():
        }
     entry = pd.DataFrame.from_dict([dict])
 
+    entry.to_gbq(logins.DATASET_ID, logins.project_id)
 
-def get_quotes():
-    print("ok")
 
 with DAG(
     default_args=default_args,
@@ -98,14 +98,20 @@ with DAG(
         python_callable=get_io
     )
 
-    create_dataset = BigQueryCreateEmptyDatasetOperator(task_id="create_dataset", dataset_id=DATASET_NAME)
+    run_this = BashOperator(
+        task_id="run_after_loop",
+        bash_command="echo 1",
+    )
+
+    task1 >> run_this
+#     create_dataset = BigQueryCreateEmptyDatasetOperator(task_id="create_dataset", dataset_id=DATASET_NAME)
     
-    update_table = BigQueryUpdateTableOperator(
-    task_id="update_table",
-    dataset_id=DATASET_ID,
-    table_id="impliedopen",
-    fields=["date", "stamp", "dow_io", "dow_price", "sp_io", "sp_price", "nasdaq_io", "nasdaq_price", "updated_at_GMT"],
-    table_resource=dict,
-)
+#     update_table = BigQueryUpdateTableOperator(
+#     task_id="update_table",
+#     dataset_id=DATASET_ID,
+#     table_id="impliedopen",
+#     fields=["date", "stamp", "dow_io", "dow_price", "sp_io", "sp_price", "nasdaq_io", "nasdaq_price", "updated_at_GMT"],
+#     table_resource=dict,
+# )
 
 
