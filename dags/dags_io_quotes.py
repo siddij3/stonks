@@ -3,28 +3,20 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 
-from airflow import models
-from airflow.models.xcom_arg import XComArg
-from airflow.providers.google.cloud.operators.cloud_sql import (
-    CloudSQLCloneInstanceOperator,
-    CloudSQLCreateInstanceDatabaseOperator,
-    CloudSQLCreateInstanceOperator,
-    CloudSQLDeleteInstanceDatabaseOperator,
-    CloudSQLDeleteInstanceOperator,
-    CloudSQLExportInstanceOperator,
-    CloudSQLImportInstanceOperator,
-    CloudSQLInstancePatchOperator,
-    CloudSQLPatchInstanceDatabaseOperator,
+from libs.af_logins import DATASET_ID
+
+from airflow.providers.google.cloud.operators.bigquery import (
+    BigQueryCreateEmptyDatasetOperator,
+    BigQueryDeleteDatasetOperator,
+    BigQueryGetDatasetOperator,
+    BigQueryUpdateDatasetOperator,
+    BigQueryUpdateTableOperator
 )
 
-import sys
-sys.path.append('/opt/airflow/dags/libs')
-import json
-import requests
-from bs4 import BeautifulSoup
-from pytz import timezone
-import pandas as pd
 
+DAG_ID = 1
+ENV_ID = 1
+DATASET_NAME = f"dataset_{DAG_ID}_{ENV_ID}"
 
 default_args = {
     'owner': 'junaid',
@@ -36,8 +28,13 @@ default_args = {
 def get_io():
     import libs.af_urls as urls
     from libs.af_headers import headers
-
-    
+    import sys
+    sys.path.append('/opt/airflow/dags/libs')
+    import json
+    import requests
+    from bs4 import BeautifulSoup
+    from pytz import timezone
+    import pandas as pd
 
     # Randomize the numbers so it doesn't get repetitive
     response_dow = requests.get(url=urls.url_dow, headers=headers)
@@ -93,22 +90,22 @@ with DAG(
     default_args=default_args,
     dag_id="dag_io_quotes",
     start_date=datetime(2023, 7, 25),
-    schedule_interval='@daily'
+    schedule_interval='@daily',
+    tags = ["stocks","bigquery"]
 ) as dag:
     task1 = PythonOperator(
         task_id='get_io',
         python_callable=get_io
     )
+
+    create_dataset = BigQueryCreateEmptyDatasetOperator(task_id="create_dataset", dataset_id=DATASET_NAME)
     
     update_table = BigQueryUpdateTableOperator(
     task_id="update_table",
-    dataset_id=DATASET_NAME,
-    table_id="test_table",
-    fields=["friendlyName", "description"],
-    table_resource={
-        "friendlyName": "Updated Table",
-        "description": "Updated Table",
-    },
+    dataset_id=DATASET_ID,
+    table_id="impliedopen",
+    fields=["date", "stamp", "dow_io", "dow_price", "sp_io", "sp_price", "nasdaq_io", "nasdaq_price", "updated_at_GMT"],
+    table_resource=dict,
 )
 
-    task1 >> task2
+

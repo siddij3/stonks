@@ -68,15 +68,6 @@ if __name__ == '__main__':
        "updated_at_GMT": updated_at
        }
 
-    entry = pd.DataFrame.from_dict([dict])
 
 
 
-    table_name = impliedopen_table()
-    engine = connect()
-
-    if (not check_tables(engine, table_name)):
-        pandas_to_sql(table_name, entry, engine)
-
-    else:
-        pandas_to_sql_if_exists(table_name, entry, engine, "append")

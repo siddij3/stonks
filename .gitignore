@@ -6,3 +6,4 @@ plugins/*
 *.pem
 
 __pycache__/*
+.key
