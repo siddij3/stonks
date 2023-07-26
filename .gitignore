@@ -1,4 +1,8 @@
 logins.py
 logs/*
 plugins/*
+*/__pycache__
 
+*.pem
+
+__pycache__/*

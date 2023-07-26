@@ -11,14 +11,8 @@ from sql_manager import pandas_to_sql
 from sql_manager import check_tables
 from sql_manager import connect
 from sql_manager import impliedopen_table
+from sql_manager import pandas_to_sql_if_exists
 from headers import headers
-
-
-
-def randomNums():
-
-    return 1
-
 
 if __name__ == '__main__':
 
@@ -46,8 +40,6 @@ if __name__ == '__main__':
     json_sp = json.loads(sp.string)[0]
     json_nasdaq = json.loads(nasdaq.string)[0]
 
-
-    # TODO include "price"
     dow_io = json_nasdaq['implied_open']
     sp_io = json_sp['implied_open']
     nasdaq_io = json_nasdaq['implied_open']
@@ -55,8 +47,6 @@ if __name__ == '__main__':
     dow_price = json_nasdaq['price']
     sp_price = json_sp['price']
     nasdaq_price = json_nasdaq['price']
-
-
 
     date = str(datetime.now(timezone('US/Eastern'))).split()[0]
     stamp = str(datetime.now(timezone('US/Eastern'))).split()[1].split('.')[0]
@@ -80,6 +70,8 @@ if __name__ == '__main__':
 
     entry = pd.DataFrame.from_dict([dict])
 
+
+
     table_name = impliedopen_table()
     engine = connect()
 
@@ -87,4 +79,4 @@ if __name__ == '__main__':
         pandas_to_sql(table_name, entry, engine)
 
     else:
-        pandas_to_sql(table_name, entry, engine)
+        pandas_to_sql_if_exists(table_name, entry, engine, "append")
