@@ -4,12 +4,15 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
 
+from google.oauth2 import service_account
+
 from airflow.providers.google.cloud.operators.bigquery import (
     BigQueryCreateEmptyDatasetOperator,
     BigQueryDeleteDatasetOperator,
     BigQueryGetDatasetOperator,
     BigQueryUpdateDatasetOperator,
-    BigQueryUpdateTableOperator
+    BigQueryUpdateTableOperator,
+    BigQueryExecuteQueryOperator
 )
 
 
@@ -17,12 +20,12 @@ DAG_ID = 1
 ENV_ID = 1
 DATASET_NAME = f"dataset_{DAG_ID}_{ENV_ID}"
 
+
 default_args = {
     'owner': 'junaid',
     'retry': 5,
     'retry_delay': timedelta(minutes=5)
 }
-
 
 def get_io():
     import libs.af_urls as urls
@@ -33,9 +36,6 @@ def get_io():
     import requests
     from bs4 import BeautifulSoup
     from pytz import timezone
-    import pandas as pd
-    import libs.af_logins as logins
-
 
     # Randomize the numbers so it doesn't get repetitive
     response_dow = requests.get(url=urls.url_dow, headers=headers)
@@ -54,11 +54,11 @@ def get_io():
     json_sp = json.loads(sp.string)[0]
     json_nasdaq = json.loads(nasdaq.string)[0]
 
-    dow_io = json_nasdaq['implied_open']
+    dow_io = json_dow['implied_open']
     sp_io = json_sp['implied_open']
     nasdaq_io = json_nasdaq['implied_open']
 
-    dow_price = json_nasdaq['price']
+    dow_price = json_dow['price']
     sp_price = json_sp['price']
     nasdaq_price = json_nasdaq['price']
     
@@ -81,9 +81,6 @@ def get_io():
 
        "updated_at_GMT": updated_at
        }
-    entry = pd.DataFrame.from_dict([dict])
-
-    entry.to_gbq(logins.DATASET_ID, logins.project_id)
 
 
 with DAG(
@@ -103,7 +100,16 @@ with DAG(
         bash_command="echo 1",
     )
 
-    task1 >> run_this
+    markets_2 = BigQueryExecuteQueryOperator(
+        task_id="markets_2",
+        sql="""SELECT * FROM `ivory-oarlock-388916.stonks.markets`""",
+        destination_dataset_table=f"ivory-oarlock-388916.stonks.markets_2",
+        write_disposition="WRITE_TRUNCATE",
+        gcp_conn_id="stocks_bigquery",
+        use_legacy_sql=False,
+    )
+
+    task1 >> run_this >> markets_2
 #     create_dataset = BigQueryCreateEmptyDatasetOperator(task_id="create_dataset", dataset_id=DATASET_NAME)
     
 #     update_table = BigQueryUpdateTableOperator(
