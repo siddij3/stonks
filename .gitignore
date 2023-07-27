@@ -6,7 +6,9 @@ plugins/*
 *.pem
 
 __pycache__/*
-.key
-.keys
+
 
 __pycache__
+*.perm
+credentials.json
+gbp_key.json
