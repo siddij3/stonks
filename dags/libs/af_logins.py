@@ -3,6 +3,8 @@ server = '34.31.81.174'
 database = 'stonks'
 table_io = "impliedopen"
 
+io_raw = "io_raw"
+
 username = 'root'
 password = 'sheissandjunaid'
 

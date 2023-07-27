@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
+import sys
+sys.path.append('/opt/airflow/dags/libs')
 
 from google.oauth2 import service_account
 
@@ -27,15 +29,36 @@ default_args = {
     'retry_delay': timedelta(minutes=5)
 }
 
+def toBQ(df):
+    import pandas_gbq
+    import libs.af_logins as logins
+    import os
+
+    path = os.path.expanduser("./dags/libs/.key")
+
+    for filename in os.listdir(path):
+        print(filename)
+    credentials = service_account.Credentials.from_service_account_file(
+    "./dags/libs/.key/gbp_key.json",
+    )
+
+    project_id = logins.project_id
+    table_id = f"{logins.database}.{logins.io_raw}"
+
+    pandas_gbq.to_gbq(df, table_id, project_id=project_id, credentials=credentials)
+
+    return 1
+
+
 def get_io():
     import libs.af_urls as urls
     from libs.af_headers import headers
-    import sys
-    sys.path.append('/opt/airflow/dags/libs')
+
     import json
     import requests
     from bs4 import BeautifulSoup
     from pytz import timezone
+    import pandas as pd
 
     # Randomize the numbers so it doesn't get repetitive
     response_dow = requests.get(url=urls.url_dow, headers=headers)
@@ -81,6 +104,7 @@ def get_io():
 
        "updated_at_GMT": updated_at
        }
+    toBQ(pd.DataFrame([dict]))
 
 
 with DAG(
@@ -97,19 +121,21 @@ with DAG(
 
     run_this = BashOperator(
         task_id="run_after_loop",
-        bash_command="echo 1",
+        bash_command="echo 1 This was run after the implied open scrape",
     )
 
-    markets_2 = BigQueryExecuteQueryOperator(
-        task_id="markets_2",
-        sql="""SELECT * FROM `ivory-oarlock-388916.stonks.markets`""",
-        destination_dataset_table=f"ivory-oarlock-388916.stonks.markets_2",
-        write_disposition="WRITE_TRUNCATE",
-        gcp_conn_id="stocks_bigquery",
-        use_legacy_sql=False,
-    )
+    # markets_2 = BigQueryExecuteQueryOperator(
+    #     task_id="markets_2",
+    #     sql="""SELECT * FROM `ivory-oarlock-388916.stonks.io_raw`""",
+    #     destination_dataset_table=f"ivory-oarlock-388916.stonks.io_raw_2",
+    #     write_disposition="WRITE_TRUNCATE",
+    #     gcp_conn_id="stocks_bigquery",
+    #     use_legacy_sql=False,
+    # )
 
-    task1 >> run_this >> markets_2
+    # task1  >> markets_2
+
+    task1 >> run_this 
 #     create_dataset = BigQueryCreateEmptyDatasetOperator(task_id="create_dataset", dataset_id=DATASET_NAME)
     
 #     update_table = BigQueryUpdateTableOperator(

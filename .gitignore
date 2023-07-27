@@ -7,3 +7,6 @@ plugins/*
 
 __pycache__/*
 .key
+.keys
+
+__pycache__

@@ -1,17 +1,28 @@
-from google_auth_oauthlib import flow
-from google.cloud import bigquery
-import google.oauth2.credentials
-import google.auth.transport.requests
-import google.cloud.bigquery as bq
 
-client = bq.Client.from_service_account_json(".key/gbp_key.json")
-print(client)
+# import google.auth.transport.requests
+# import google.cloud.bigquery as bq
 
-query_string = """SELECT * FROM `ivory-oarlock-388916.stonks.impliedopen`"""
-query_job = client.query(query_string)
+# client = bq.Client.from_service_account_json(".key/gbp_key.json")
+# print(client)
 
-results = query_job.result()  
+# query_string = """SELECT * FROM `ivory-oarlock-388916.stonks.impliedopen`"""
+# query_job = client.query(query_string)
 
-for row in results:
-    print("{}: {}".format(row.title, row.unique_words))
+# results = query_job.result()  
 
+
+
+
+from google.oauth2 import service_account
+import pandas_gbq
+
+
+credentials = service_account.Credentials.from_service_account_file(
+   ".key/gbp_key.json",
+)
+sql = """SELECT * FROM `ivory-oarlock-388916.stonks.impliedopen`"""
+
+df = pandas_gbq.read_gbq(sql, project_id="ivory-oarlock-388916", credentials=credentials)
+
+for row in df:
+    print(row)
