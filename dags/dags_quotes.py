@@ -6,7 +6,7 @@ from airflow.operators.bash import BashOperator
 import sys
 sys.path.append('/opt/airflow/dags/libs')
 
-from google.oauth2 import service_account
+
 
 from airflow.providers.google.cloud.operators.bigquery import (
     BigQueryCreateEmptyDatasetOperator,
@@ -29,30 +29,13 @@ default_args = {
     'retry_delay': timedelta(minutes=5)
 }
 
-def toBQ(df):
-    import pandas_gbq
-    import libs.af_logins as logins
-    import os
-
-    path = os.path.expanduser("./dags/libs/.key")
-
-    for filename in os.listdir(path):
-        print(filename)
-    credentials = service_account.Credentials.from_service_account_file(
-    "./dags/libs/.key/gbp_key.json",
-    )
-
-    project_id = logins.project_id
-    table_id = f"{logins.database}.{logins.io_raw}"
-
-    pandas_gbq.to_gbq(df, table_id, project_id=project_id, credentials=credentials)
-
-    return 1
-
 
 def get_io():
     import libs.af_urls as urls
     from libs.af_headers import headers
+    import libs.af_libs as libs
+    import libs.af_logins as logins
+
 
     import json
     import requests
@@ -104,19 +87,73 @@ def get_io():
 
        "updated_at_GMT": updated_at
        }
-    toBQ(pd.DataFrame([dict]))
+    
+    project_id = logins.project_id
+    table_id = f"{logins.database}.{logins.io_raw}"
+    libs.toBQ(pd.DataFrame([dict]), project_id, table_id)
+
+
+def get_quote():
+    from libs.af_headers import headers2
+    import libs.af_urls as urls
+    import libs.af_logins as logins
+    import libs.af_libs as libs
+
+
+    from pytz import timezone
+    from urllib.request import Request, urlopen
+    from bs4 import BeautifulSoup
+
+    import pandas as pd
+
+
+    date = str(datetime.now(timezone('US/Eastern'))).split()[0]
+    stamp = str(datetime.now(timezone('US/Eastern'))).split()[1].split('.')[0]
+  
+    url_nvda = f"https://finviz.com/quote.ashx?t=NVDA&ty=c&p=d&b=1"
+
+    req = Request(url_nvda , headers=headers2)
+
+    webpage = urlopen(req).read()
+    soup = BeautifulSoup(webpage, 'html.parser')
+    
+    index = soup.find_all("td", class_="snapshot-td2")[0].text.split(', ')[-1]   # This gives the INDEX wow
+    
+    price = soup.find_all("td", class_="snapshot-td2")[28].text  # This gives the RSI
+    RSI = soup.find_all("td", class_="snapshot-td2")[52].text  # This gives the RSI
+
+    print(index)
+    print(price)
+    print(RSI)
+
+    dict = {
+        "date":date,
+       "stamp":stamp,
+
+       "price": price,
+       "RSI": RSI
+       }
+    
+    project_id = logins.project_id
+    table_id = f"{logins.database}.{logins.table_nvda}"
+    libs.toBQ(pd.DataFrame([dict]), project_id, table_id)
 
 
 with DAG(
     default_args=default_args,
-    dag_id="dag_io_quotes",
-    start_date=datetime(2023, 7, 25),
-    schedule_interval='@daily',
+    dag_id="dag_quotes",
+    start_date=datetime(2023, 7, 31),
+    schedule_interval='@hourly',
     tags = ["stocks","bigquery"]
 ) as dag:
     task1 = PythonOperator(
         task_id='get_io',
         python_callable=get_io
+    )
+
+    task2= PythonOperator(
+        task_id='get_quote',
+        python_callable=get_quote
     )
 
     run_this = BashOperator(
@@ -135,7 +172,7 @@ with DAG(
 
     # task1  >> markets_2
 
-    task1 >> run_this 
+    [task1, task2] >> run_this 
 #     create_dataset = BigQueryCreateEmptyDatasetOperator(task_id="create_dataset", dataset_id=DATASET_NAME)
     
 #     update_table = BigQueryUpdateTableOperator(

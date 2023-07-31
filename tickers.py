@@ -110,54 +110,37 @@ def get_market(soup):
 
 if __name__ == "__main__":
 
-    engine = connect()
-
-
     date = str(datetime.now(timezone('US/Eastern'))).split()[0]
     stamp = str(datetime.now(timezone('US/Eastern'))).split()[1].split('.')[0]
   
     dict_quotes = {"date": date, "stamp": stamp}
 
-    url_tic = f"https://finviz.com/quote.ashx?t=A&ty=c&p=d&b=1"
-
-    markets_table = sql_manager.markets_table()
-    tickers = sql_manager.sql_to_pandas(markets_table, engine)
-
-
-    print(tickers)
-
-    for tic in tickers:
-        print(tic)
+    url_tic = f"https://finviz.com/quote.ashx?t=NVDA&ty=c&p=d&b=1"
 
     req = Request(url_tic , headers=headers.headers2)
     webpage = urlopen(req).read()
     soup = BeautifulSoup(webpage, 'html.parser')
     
-    index = soup.find_all("td", class_="snapshot-td2")[0].text   # This gives the INDEX wow
-    price = soup.find_all("td", class_="snapshot-td2")[52].text  # This gives the RSI
+    index = soup.find_all("td", class_="snapshot-td2")[0].text.split(', ')[-1]   # This gives the INDEX wow
+    
+    price = soup.find_all("td", class_="snapshot-td2")[28].text  # This gives the RSI
+    RSI = soup.find_all("td", class_="snapshot-td2")[52].text  # This gives the RSI
 
     print(index)
     print(price)
+    print(RSI)
 
+    dict = {
+        "date":date,
+       "stamp":stamp,
 
-
-    # table = {
-    #      "ticker": tickers,
-    #      "market": markets
-    #  }
+       "price": price,
+       "RSI": RSI
+       }
+    
+    
     
     # # quotes = pd.DataFrame.from_dict([dict_quotes])
     # tickers_markers = pd.DataFrame.from_dict(table)
 
-    # # quotes_table_name = sql_manager.quotes_table()
-    # markets_table_name = sql_manager.markets_table()
-
     # print(tickers_markers)
-
-
-
-    # if (not check_tables(engine, markets_table_name)):
-    #     pandas_to_sql(markets_table_name, tickers_markers, engine)
-
-    # else:
-    #     sql_manager.pandas_to_sql_if_exists(markets_table_name, tickers_markers, engine, "append")
