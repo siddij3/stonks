@@ -52,9 +52,6 @@ def get_io():
     sp = BeautifulSoup(response_sp.text, 'html.parser')
     nasdaq = BeautifulSoup(response_nasdaq.text, 'html.parser')
 
-    date = str(datetime.now(timezone('US/Eastern'))).split()[0]
-    stamp = str(datetime.now(timezone('US/Eastern'))).split()[1].split('.')[0]
-
     json_dow = json.loads(dow.string)[0]
     json_sp = json.loads(sp.string)[0]
     json_nasdaq = json.loads(nasdaq.string)[0]
@@ -67,13 +64,11 @@ def get_io():
     sp_price = json_sp['price']
     nasdaq_price = json_nasdaq['price']
     
-    date = str(datetime.now(timezone('US/Eastern'))).split()[0]
-    stamp = str(datetime.now(timezone('US/Eastern'))).split()[1].split('.')[0]
     updated_at = str(datetime.fromisoformat(str(json_nasdaq["last_updated"]).split('.')[0]))
 
-
+# time
     dict = {
-        "date":time.strftime('%Y-%m-%d %H:%M:%S'),
+        "date_time": datetime.now(timezone('US/Eastern')).strftime('%Y-%m-%d %H:%M:%S'),
 
        "dow_io":dow_io,
        "dow_price":dow_price,
@@ -86,10 +81,17 @@ def get_io():
 
        "updated_at_GMT": updated_at
        }
-    print(dict)
+
+
     project_id = logins.project_id
     table_id = f"{logins.database}.{logins.io_raw}"
-    libs.toBQ(pd.DataFrame([dict]), project_id, table_id)
+
+    df = pd.DataFrame([dict])
+    df['date_time'] = pd.to_datetime(df['date_time'], utc=False)
+    df['updated_at_GMT'] = pd.to_datetime(df['updated_at_GMT'], utc=True)
+
+    libs.toBQ(df, project_id, table_id)
+
 
 
 def get_quote():
@@ -127,7 +129,7 @@ def get_quote():
 
      
     dict = {
-        "date":time.strftime('%Y-%m-%d %H:%M:%S'),
+        "date_time":datetime.now(timezone('US/Eastern')).strftime('%Y-%m-%d %H:%M:%S'),
 
        "price": price,
        "RSI": RSI
@@ -135,7 +137,10 @@ def get_quote():
     
     project_id = logins.project_id
     table_id = f"{logins.database}.{logins.table_nvda}"
-    libs.toBQ(pd.DataFrame([dict]), project_id, table_id)
+
+    df = pd.DataFrame([dict])
+    df['date_time'] = pd.to_datetime(df['date_time'], utc=False)
+    libs.toBQ(df, project_id, table_id)
 
 
 with DAG(
