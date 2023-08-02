@@ -35,8 +35,7 @@ def get_io():
     from libs.af_headers import headers
     import libs.af_libs as libs
     import libs.af_logins as logins
-
-
+    import time
     import json
     import requests
     from bs4 import BeautifulSoup
@@ -70,11 +69,11 @@ def get_io():
     
     date = str(datetime.now(timezone('US/Eastern'))).split()[0]
     stamp = str(datetime.now(timezone('US/Eastern'))).split()[1].split('.')[0]
-    updated_at = str(json_nasdaq["last_updated"]).split('T')[1].split('.')[0]
+    updated_at = str(datetime.fromisoformat(str(json_nasdaq["last_updated"]).split('.')[0]))
+
 
     dict = {
-        "date":date,
-       "stamp":stamp,
+        "date":time.strftime('%Y-%m-%d %H:%M:%S'),
 
        "dow_io":dow_io,
        "dow_price":dow_price,
@@ -87,7 +86,7 @@ def get_io():
 
        "updated_at_GMT": updated_at
        }
-    
+    print(dict)
     project_id = logins.project_id
     table_id = f"{logins.database}.{logins.io_raw}"
     libs.toBQ(pd.DataFrame([dict]), project_id, table_id)
@@ -98,7 +97,7 @@ def get_quote():
     import libs.af_urls as urls
     import libs.af_logins as logins
     import libs.af_libs as libs
-
+    import time
 
     from pytz import timezone
     from urllib.request import Request, urlopen
@@ -126,9 +125,9 @@ def get_quote():
     print(price)
     print(RSI)
 
+     
     dict = {
-        "date":date,
-       "stamp":stamp,
+        "date":time.strftime('%Y-%m-%d %H:%M:%S'),
 
        "price": price,
        "RSI": RSI
@@ -142,7 +141,7 @@ def get_quote():
 with DAG(
     default_args=default_args,
     dag_id="dag_quotes",
-    start_date=datetime(2023, 7, 31),
+    start_date=datetime(2023, 8, 2),
     schedule_interval='@hourly',
     tags = ["stocks","bigquery"]
 ) as dag:
