@@ -66,7 +66,6 @@ def get_io():
     
     updated_at = str(datetime.fromisoformat(str(json_nasdaq["last_updated"]).split('.')[0]))
 
-# time
     dict = {
         "date_time": datetime.now(timezone('US/Eastern')).strftime('%Y-%m-%d %H:%M:%S'),
 
@@ -86,12 +85,33 @@ def get_io():
     project_id = logins.project_id
     table_id = f"{logins.database}.{logins.io_raw}"
 
-    df = pd.DataFrame([dict])
-    df['date_time'] = pd.to_datetime(df['date_time'], utc=False)
-    df['updated_at_GMT'] = pd.to_datetime(df['updated_at_GMT'], utc=True)
+    df = fix_datetime(pd.DataFrame([dict]), pd)
+    
+    df['updated_at_GMT'] = pd.to_datetime(df['updated_at_GMT'])
 
     libs.toBQ(df, project_id, table_id)
 
+def fix_datetime(df, pd):
+    df['date_time'] = pd.to_datetime(df['date_time'])
+    return df
+
+def get_actual_price(tic, BeautifulSoup):
+    import requests
+    import re
+
+    url = f"https://www.marketwatch.com/investing/stock/{tic}"
+    
+    response = requests.get(url)
+
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    a = soup.find_all("h2", class_="intraday__price")
+
+    if a == None or a == []:
+        return 0
+    
+    quote = re.findall(r'[\d]*[.][\d]+', str(a))[-1]
+    return quote
 
 
 def get_quote():
@@ -111,19 +131,18 @@ def get_quote():
     date = str(datetime.now(timezone('US/Eastern'))).split()[0]
     stamp = str(datetime.now(timezone('US/Eastern'))).split()[1].split('.')[0]
   
-    url_nvda = f"https://finviz.com/quote.ashx?t=NVDA&ty=c&p=d&b=1"
+    url_nvda = f"https://finviz.com/quote.ashx?t=NVDA&ty=c&p=d&b=1" #For RSI
 
     req = Request(url_nvda , headers=headers2)
 
     webpage = urlopen(req).read()
     soup = BeautifulSoup(webpage, 'html.parser')
     
-    index = soup.find_all("td", class_="snapshot-td2")[0].text.split(', ')[-1]   # This gives the INDEX wow
+    # index = soup.find_all("td", class_="snapshot-td2")[0].text.split(', ')[-1]   # This gives the INDEX wow
     
-    price = soup.find_all("td", class_="snapshot-td2")[28].text  # This gives the RSI
+    price = get_actual_price("NVDA", BeautifulSoup) # soup.find_all("td", class_="snapshot-td2")[28].text  # This gives the RSI
     RSI = soup.find_all("td", class_="snapshot-td2")[52].text  # This gives the RSI
 
-    print(index)
     print(price)
     print(RSI)
 
@@ -138,9 +157,7 @@ def get_quote():
     project_id = logins.project_id
     table_id = f"{logins.database}.{logins.table_nvda}"
 
-    df = pd.DataFrame([dict])
-    df['date_time'] = pd.to_datetime(df['date_time'], utc=False)
-    libs.toBQ(df, project_id, table_id)
+    libs.toBQ(fix_datetime(pd.DataFrame([dict]), pd), project_id, table_id)
 
 
 with DAG(
