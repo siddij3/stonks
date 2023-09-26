@@ -16,6 +16,8 @@ import time
 import headers
 from urllib.request import Request, urlopen
 
+from datetime import datetime, timedelta
+
 
 def scrape(tic):
     url = f"https://www.marketwatch.com/investing/stock/{tic}"
@@ -100,14 +102,6 @@ def get_market(soup):
     return market
 
 
-            
-# def get_RSI():
-#     return rsi
-
-# def get_price():
-#     return price:
-
-
 if __name__ == "__main__":
 
     date = str(datetime.now(timezone('US/Eastern'))).split()[0]
@@ -117,26 +111,44 @@ if __name__ == "__main__":
 
     url_tic = f"https://finviz.com/quote.ashx?t=NVDA&ty=c&p=d&b=1"
 
-    req = Request(url_tic , headers=headers.headers2)
+    url_yahoo = f"https://ca.finance.yahoo.com/quote/NVDA/history?p=NVDA"
+
+    req = Request(url_yahoo , headers=headers.headers2)
+
     webpage = urlopen(req).read()
     soup = BeautifulSoup(webpage, 'html.parser')
+
+    close =  soup.find_all("td", class_="Py(10px) Pstart(10px)")[4] #[0].text.split(', ')[-1]   # This gives the INDEX wow
+    print(close)
+    date = datetime.now(timezone('US/Eastern')).strftime('%Y-%m-%d')
+    print(date)
+
     
-    index = soup.find_all("td", class_="snapshot-td2")[0].text.split(', ')[-1]   # This gives the INDEX wow
+
+
+
+
+
+
+    # webpage = urlopen(req).read()
+    # soup = BeautifulSoup(webpage, 'html.parser')
     
-    price = soup.find_all("td", class_="snapshot-td2")[28].text  # This gives the RSI
-    RSI = soup.find_all("td", class_="snapshot-td2")[52].text  # This gives the RSI
+    # index = soup.find_all("td", class_="snapshot-td2")[0].text.split(', ')[-1]   # This gives the INDEX wow
+    
+    # price = soup.find_all("td", class_="snapshot-td2")[28].text  # This gives the RSI
+    # RSI = soup.find_all("td", class_="snapshot-td2")[52].text  # This gives the RSI
 
-    print(index)
-    print(price)
-    print(RSI)
+    # print(index)
+    # print(price)
+    # print(RSI)
 
-    dict = {
-        "date":date,
-       "stamp":stamp,
+    # dict = {
+    #     "date":date,
+    #    "stamp":stamp,
 
-       "price": price,
-       "RSI": RSI
-       }
+    #    "price": price,
+    #    "RSI": RSI
+    #    }
     
     
     
