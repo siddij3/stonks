@@ -14,6 +14,10 @@ from sql_manager import impliedopen_table
 from sql_manager import pandas_to_sql_if_exists
 from headers import headers
 
+def fix_datetime(df, pd):
+    df['date_time'] = pd.to_datetime(df['date_time'])
+    return df
+
 if __name__ == '__main__':
 
     url_dow = "https://production.dataviz.cnn.io/markets/futures/summary/YM00-USA:D"
@@ -29,9 +33,6 @@ if __name__ == '__main__':
     dow = BeautifulSoup(response_dow.text, 'html.parser')
     sp = BeautifulSoup(response_sp.text, 'html.parser')
     nasdaq = BeautifulSoup(response_nasdaq.text, 'html.parser')
-
-    date = str(datetime.now(timezone('US/Eastern'))).split()[0]
-    stamp = str(datetime.now(timezone('US/Eastern'))).split()[1].split('.')[0]
 
     json_dow = json.loads(dow.string)[0]
     json_sp = json.loads(sp.string)[0]
@@ -65,6 +66,7 @@ if __name__ == '__main__':
        "updated_at_GMT": updated_at
        }
 
+    df = fix_datetime(pd.DataFrame([dict]), pd)
 
 
 
