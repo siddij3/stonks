@@ -8,16 +8,6 @@ sys.path.append('/opt/airflow/dags/libs')
 
 
 
-from airflow.providers.google.cloud.operators.bigquery import (
-    BigQueryCreateEmptyDatasetOperator,
-    BigQueryDeleteDatasetOperator,
-    BigQueryGetDatasetOperator,
-    BigQueryUpdateDatasetOperator,
-    BigQueryUpdateTableOperator,
-    BigQueryExecuteQueryOperator
-)
-
-
 DAG_ID = 1
 ENV_ID = 1
 DATASET_NAME = f"dataset_{DAG_ID}_{ENV_ID}"
