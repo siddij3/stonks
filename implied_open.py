@@ -13,46 +13,41 @@ from sql_manager import connect
 from sql_manager import impliedopen_table
 from sql_manager import pandas_to_sql_if_exists
 from headers import headers
+import urls
 
 def fix_datetime(df, pd):
     df['date_time'] = pd.to_datetime(df['date_time'])
     return df
 
-if __name__ == '__main__':
+def get_indexes():
 
-    url_dow = "https://production.dataviz.cnn.io/markets/futures/summary/YM00-USA:D"
-    url_sp = "https://production.dataviz.cnn.io/markets/futures/summary/ES00-USA:D"
-    url_nasdaq = "https://production.dataviz.cnn.io/markets/futures/summary/NQ00-USA:D"
-   
     # Randomize the numbers so it doesn't get repetitive
-    response_dow = requests.get(url=url_dow, headers=headers)
-    response_sp = requests.get(url=url_sp, headers=headers)
-    response_nasdaq = requests.get(url=url_nasdaq, headers=headers)
+    response_dow = requests.get(url=urls.url_dow, headers=headers)
+    response_sp = requests.get(url=urls.url_sp, headers=headers)
+    response_nasdaq = requests.get(url=urls.url_nasdaq, headers=headers)
 
     # Parse the whole HTML page using BeautifulSoup
     dow = BeautifulSoup(response_dow.text, 'html.parser')
     sp = BeautifulSoup(response_sp.text, 'html.parser')
     nasdaq = BeautifulSoup(response_nasdaq.text, 'html.parser')
 
+
     json_dow = json.loads(dow.string)[0]
     json_sp = json.loads(sp.string)[0]
     json_nasdaq = json.loads(nasdaq.string)[0]
 
-    dow_io = json_nasdaq['implied_open']
+    dow_io = json_dow['implied_open']
     sp_io = json_sp['implied_open']
     nasdaq_io = json_nasdaq['implied_open']
 
-    dow_price = json_nasdaq['price']
+    dow_price = json_dow['price']
     sp_price = json_sp['price']
     nasdaq_price = json_nasdaq['price']
 
-    date = str(datetime.now(timezone('US/Eastern'))).split()[0]
-    stamp = str(datetime.now(timezone('US/Eastern'))).split()[1].split('.')[0]
-    updated_at = str(json_nasdaq["last_updated"]).split('T')[1].split('.')[0]
+    updated_at = str(datetime.fromisoformat(str(json_nasdaq["last_updated"]).split('.')[0]))
 
     dict = {
-        "date":date,
-       "stamp":stamp,
+        "date_time": datetime.now(timezone('US/Eastern')).strftime('%Y-%m-%d %H:%M:%S'),
 
        "dow_io":dow_io,
        "dow_price":dow_price,
@@ -66,7 +61,15 @@ if __name__ == '__main__':
        "updated_at_GMT": updated_at
        }
 
+    # project_id = logins.project_id
+    # table_id = f"{logins.database}.{logins.io_raw}"
+
     df = fix_datetime(pd.DataFrame([dict]), pd)
+    
+    df['updated_at_GMT'] = pd.to_datetime(df['updated_at_GMT'])
+    
+    return df
+
 
 
 

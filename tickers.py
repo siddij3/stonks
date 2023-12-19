@@ -14,22 +14,11 @@ import re
 import sql_manager
 import time
 import headers
+import urls
 from urllib.request import Request, urlopen
 
 from datetime import datetime, timedelta
 
-
-def scrape(tic):
-    url = f"https://www.marketwatch.com/investing/stock/{tic}"
-    print(url)
-    response = requests.get(url)
-
-    soup = BeautifulSoup(response.text, 'html.parser')
-
-    market = getmarket(soup)
-    # quote = getquote(soup)
-
-    return  market #, quote
 
 def getmarket(soup):
     a = soup.find('meta', attrs={'name': 'exchange'})
@@ -44,18 +33,13 @@ def getmarket(soup):
     market = ' '.join(market)
     return market
 
-def getquote(soup):
-    a = soup.find_all("h2", class_="intraday__price")
-
-    if a == None or a == []:
-        return 0
-    
-    print(a)
-    quote = re.findall(r'[\d]*[.][\d]+', str(a))[-1]
-    return quote
-
-
 def scrapefinviz():
+    
+    def get_market(soup):
+        market = soup.find("td", class_="fullview-links").find_all('a')
+        market = market[-1].text
+
+        return market
 
     numtics = int(8562)
 
@@ -79,6 +63,7 @@ def scrapefinviz():
                 tickers.append(tag.string)
 
     print(tickers)
+    
 
     markets = []
     for tic in tickers:
@@ -91,68 +76,68 @@ def scrapefinviz():
         soup = BeautifulSoup(webpage, 'html.parser')
         
         markets.append(get_market(soup))
-
-
     return tickers, markets
 
-def get_market(soup):
-    market = soup.find("td", class_="fullview-links").find_all('a')
-    market = market[-1].text
-    # for m in market:
-    return market
+def get_actual_price(tic, BeautifulSoup):
+    import requests
+    import re
 
+    url = f"https://www.marketwatch.com/investing/stock/{tic}"
+    
+    response = requests.get(url)
 
-if __name__ == "__main__":
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    a = soup.find_all("h2", class_="intraday__price")
+
+    if a == None or a == []:
+        return 0
+    
+    quote = re.findall(r'[\d]*[.][\d]+', str(a))[-1]
+    return quote
+
+def get_RSI(tic, BeautifulSoup):
+
+    url_nvda = urls.url_nvda
+    req = Request(url_nvda , headers=headers.headers2)
+
+    webpage = urlopen(req).read()
+    soup = BeautifulSoup(webpage, 'html.parser')
+
+    a = soup.find_all("td", class_="snapshot-td2")  
+    # b = soup.find_all("td", string="RSI (14)")  # This gives the RSI/
+
+    i = 0
+    for item in a:
+        if item.text == "RSI (14)":
+            return a[i+1].text
+        i +=1
+
+    return 0
+
+def get_stock_price():
 
     date = str(datetime.now(timezone('US/Eastern'))).split()[0]
     stamp = str(datetime.now(timezone('US/Eastern'))).split()[1].split('.')[0]
   
     dict_quotes = {"date": date, "stamp": stamp}
-
-    url_tic = f"https://finviz.com/quote.ashx?t=NVDA&ty=c&p=d&b=1"
-
-    url_yahoo = f"https://ca.finance.yahoo.com/quote/NVDA/history?p=NVDA"
-
-    req = Request(url_yahoo , headers=headers.headers2)
-
-    webpage = urlopen(req).read()
-    soup = BeautifulSoup(webpage, 'html.parser')
-
-    close =  soup.find_all("td", class_="Py(10px) Pstart(10px)")[4] #[0].text.split(', ')[-1]   # This gives the INDEX wow
-    print(close)
     date = datetime.now(timezone('US/Eastern')).strftime('%Y-%m-%d')
-    print(date)
-
+ 
+    price = get_actual_price("NVDA", BeautifulSoup) # soup.find_all("td", class_="snapshot-td2")[28].text  # This gives the RSI
+    RSI = get_RSI("NVDA", BeautifulSoup) 
     
-# https://colab.research.google.com/drive/1qMgLSij0pdwW56cu3ZEtHvLdx3gur4S5#scrollTo=C1MZOKB3Sg0X
 
-
-
-
-
-    # webpage = urlopen(req).read()
-    # soup = BeautifulSoup(webpage, 'html.parser')
+    def fix_datetime(df, pd):
+        df['date_time'] = pd.to_datetime(df['date_time'])
+        return df
     
-    # index = soup.find_all("td", class_="snapshot-td2")[0].text.split(', ')[-1]   # This gives the INDEX wow
-    
-    # price = soup.find_all("td", class_="snapshot-td2")[28].text  # This gives the RSI
-    # RSI = soup.find_all("td", class_="snapshot-td2")[52].text  # This gives the RSI
+    dict = {
+        "date_time":datetime.now(timezone('US/Eastern')).strftime('%Y-%m-%d %H:%M:%S'),
 
-    # print(index)
-    # print(price)
-    # print(RSI)
-
-    # dict = {
-    #     "date":date,
-    #    "stamp":stamp,
-
-    #    "price": price,
-    #    "RSI": RSI
-    #    }
+       "price": price,
+       "RSI": RSI
+       }
     
+    df = fix_datetime(pd.DataFrame([dict]), pd)
     
-    
-    # # quotes = pd.DataFrame.from_dict([dict_quotes])
-    # tickers_markers = pd.DataFrame.from_dict(table)
-
-    # print(tickers_markers)
+    return df
