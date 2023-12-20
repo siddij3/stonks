@@ -7,9 +7,9 @@ import logins
 
 def get_creds_local():
     server = 'localhost' 
-    database = 'stonks' 
-    username = 'admin' 
-    password = 'password'  
+    database = 'mydb' 
+    username = 'junaid' 
+    password = 'junaid'  
     port = 3306
 
     con = f'mysql+pymysql://{username}:{password}@{server}/{database}'
@@ -33,11 +33,8 @@ def connect():
 
 
 
-def impliedopen_table():
-    return "impliedopen"
-
-def markets_table():
-    return "markets"
+def indexes_table():
+    return "stock_indexes"
 
 def quotes_table():
     return "quotes"
@@ -66,10 +63,10 @@ def remove_table(table, engine):
 
 
 def pandas_to_sql(table_name, pandas_dataset, engine):
-    pandas_dataset.to_sql(table_name, con=engine)
+    return pandas_dataset.to_sql(table_name, con=engine)
     
-def pandas_to_sql_if_exists(table_name, pandas_dataset, engine, action):
-    pandas_dataset.to_sql(table_name, con=engine, if_exists=action)
+def pandas_to_sql_if_exists(table_name, pandas_dataset, engine,  action):
+    return pandas_dataset.to_sql(table_name, con=engine, if_exists=action, index=False)
 
 
 def sql_to_pandas(table_name, engine):

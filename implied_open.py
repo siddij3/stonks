@@ -1,23 +1,17 @@
 # Imports
 import requests
-import numpy as np
+from datetime import datetime, timedelta
+
 import pandas as pd
 from bs4 import BeautifulSoup
-import matplotlib.pyplot as plt
+
 from pytz import timezone
-from datetime import datetime, timedelta
+
 import json
-from sql_manager import pandas_to_sql
-from sql_manager import check_tables
-from sql_manager import connect
-from sql_manager import impliedopen_table
-from sql_manager import pandas_to_sql_if_exists
 from headers import headers
 import urls
 
-def fix_datetime(df, pd):
-    df['date_time'] = pd.to_datetime(df['date_time'])
-    return df
+
 
 def get_indexes():
 
@@ -45,7 +39,8 @@ def get_indexes():
     nasdaq_price = json_nasdaq['price']
 
     updated_at = str(datetime.fromisoformat(str(json_nasdaq["last_updated"]).split('.')[0]))
-
+   
+    import time
     dict = {
         "date_time": datetime.now(timezone('US/Eastern')).strftime('%Y-%m-%d %H:%M:%S'),
 
@@ -58,11 +53,16 @@ def get_indexes():
        "nasdaq_io":nasdaq_io,
        "nasdaq_price":nasdaq_price,
 
-       "updated_at_GMT": updated_at
+       "updated_at_GMT": updated_at,
+       "id": int(time.time())
        }
 
     # project_id = logins.project_id
     # table_id = f"{logins.database}.{logins.io_raw}"
+    def fix_datetime(df, pd):
+        df['date_time'] = pd.to_datetime(df['date_time'])
+        return df
+
 
     df = fix_datetime(pd.DataFrame([dict]), pd)
     

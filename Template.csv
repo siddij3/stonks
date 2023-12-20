@@ -1,0 +1,6 @@
+TICKER TABLE,date,price,price 2h,price 4h,price 6h,price 8h,RSI,RSI 2h,RSI 4h,RSI 6h,RSI 8h,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,
+"IOs, nasdaq, io, dow",date,dow_io,dow_io +2,dow_io +4,dow_io +6,dow price,dow_price  +2,dow_price +4,dow_price +6,sp_io,sp_io +2,sp_io +4,sp_io +6,sp price,sp_price  +2,sp_price +4,sp_price +6,nasdaq_io,nasdaq_io +2,nasdaq_io +4,nasdaq_io +6,nasdaq price,nasdaq_price  +2,nasdaq_price +4,nasdaq_price +6

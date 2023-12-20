@@ -1,23 +1,14 @@
 
 import requests
-import numpy as np
 import pandas as pd
 from bs4 import BeautifulSoup
-import matplotlib.pyplot as plt
 from pytz import timezone
 from datetime import datetime, timedelta
-import json
-from sql_manager import pandas_to_sql
-from sql_manager import check_tables
-from sql_manager import connect
-import re
-import sql_manager
 import time
 import headers
 import urls
 from urllib.request import Request, urlopen
 
-from datetime import datetime, timedelta
 
 
 def getmarket(soup):
@@ -135,7 +126,8 @@ def get_stock_price():
         "date_time":datetime.now(timezone('US/Eastern')).strftime('%Y-%m-%d %H:%M:%S'),
 
        "price": price,
-       "RSI": RSI
+       "RSI": RSI,
+       "id": int(time.time())
        }
     
     df = fix_datetime(pd.DataFrame([dict]), pd)
