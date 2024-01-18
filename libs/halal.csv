@@ -1,0 +1,103 @@
+Company Name,Ticker,Status,Rating
+Apple Inc.,AAPL,Halal,1
+"Tesla, Inc.",TSLA,Halal,2
+NVIDIA Corporation,NVDA,Halal,5
+"Pepsico, Inc.",PEP,Halal,3
+Broadcom Inc.,AVGO,Halal,2
+AstraZeneca PLC,AZN,Halal,2
+"Cisco Systems, Inc.",CSCO,Halal,2
+ASML Holding N.V.,ASML,Halal,4
+Adobe Inc.,ADBE,Halal,3
+Texas Instruments Incorporated,TXN,Halal,5
+Amgen Inc.,AMGN,Halal,5
+QUALCOMM Incorporated,QCOM,Halal,4
+Intel Corporation,INTC,Halal,2
+Starbucks Corporation,SBUX,Halal,1
+"Advanced Micro Devices, Inc.",AMD,Halal,5
+"Regeneron Pharmaceuticals, Inc.",REGN,Halal,2
+"Mondelez International, Inc.",MDLZ,Halal,2
+Vertex Pharmaceuticals Incorporated,VRTX,Halal,3
+"Intuitive Surgical, Inc.",ISRG,Halal,3
+Pinduoduo Inc.,PDD,Halal,3
+"Analog Devices, Inc.",ADI,Halal,4
+"Airbnb, Inc.",ABNB,Halal,4
+"Charter Communications, Inc.",CHTR,Halal,5
+"Applied Materials, Inc.",AMAT,Halal,5
+"Micron Technology, Inc.",MU,Halal,2
+Keurig Dr Pepper Inc.,KDP,Halal,2
+Atlassian Corporation,TEAM,Halal,5
+Monster Beverage Corporation,MNST,Halal,4
+"O�Reilly Automotive, Inc.",ORLY,Halal,4
+Lam Research Corporation,LRCX,Halal,4
+"Synopsys, Inc.",SNPS,Halal,5
+"Autodesk, Inc.",ADSK,Halal,5
+"Cadence Design Systems, Inc.",CDNS,Halal,5
+Cintas Corporation,CTAS,Halal,5
+"Fortinet, Inc.",FTNT,Halal,5
+Biogen Inc.,BIIB,Halal,2
+"Workday, Inc.",WDAY,Halal,3
+"DexCom, Inc.",DXCM,Halal,4
+KLA Corporation,KLAC,Halal,3
+Lululemon Athletica inc.,LULU,Halal,5
+NXP Semiconductors N.V.,NXPI,Halal,1
+"CrowdStrike Holdings, Inc.",CRWD,Halal,3
+"Baidu, Inc.",BIDU,Halal,1
+"Illumina, Inc.",ILMN,Halal,5
+"Marvell Technology, Inc.",MRVL,Halal,5
+Cognizant Technology Solutions Corporation,CTSH,Halal,5
+"Old Dominion Freight Line, Inc.",ODFL,Halal,5
+"Ross Stores, Inc.",ROST,Halal,3
+"IDEXX Laboratories, Inc.",IDXX,Halal,2
+"Copart, Inc.",CPRT,Halal,5
+Fastenal Company,FAST,Halal,5
+"Datadog, Inc.",DDOG,Halal,3
+Seagen Inc.,SGEN,Halal,4
+"Zscaler, Inc.",ZS,Halal,4
+"VeriSign, Inc.",VRSN,Halal,4
+"ANSYS, Inc.",ANSS,Halal,5
+"Align Technology, Inc.",ALGN,Halal,5
+"Skyworks Solutions, Inc.",SWKS,Halal,4
+"DocuSign, Inc.",DOCU,Halal,5
+"Okta, Inc.",OKTA,Halal,3
+"Zoom Video Communications, Inc.",ZM,Halal �,4
+Microsoft Corporation,MSFT,Doubtful,
+Alphabet Inc.,GOOG,Doubtful,
+Alphabet Inc.,GOOGL,Doubtful,
+"Amazon.com, Inc.",AMZN,Doubtful,
+"Meta Platforms, Inc.",META,Doubtful,
+Costco Wholesale Corporation,COST,Doubtful,
+"Netflix, Inc.",NFLX,Doubtful,
+Intuit Inc.,INTU,Doubtful,
+Booking Holdings Inc.,BKNG,Doubtful,
+"Activision Blizzard, Inc",ATVI,Doubtful,
+Marriott International,MAR,Doubtful,
+"NetEase, Inc.",NTES,Doubtful,
+"Paychex, Inc.",PAYX,Doubtful,
+Electronic Arts Inc.,EA,Doubtful,
+Microchip Technology Incorporated,MCHP,Doubtful,
+"Dollar Tree, Inc.",DLTR,Doubtful,
+eBay Inc.,EBAY,Doubtful,
+"Match Group, Inc.",MTCH,Doubtful,
+Splunk Inc.,SPLK,Doubtful,
+"T-Mobile US, Inc.",TMUS,Not Halal,
+Comcast Corporation,CMCSA,Not Halal,
+Honeywell International Inc.,HON,Not Halal,
+"PayPal Holdings, Inc.",PYPL,Not Halal,
+"Automatic Data Processing, Inc.",ADP,Not Halal,
+"Gilead Sciences, Inc.",GILD,Not Halal,
+"JD.com, Inc.",JD,Not Halal,
+"Fiserv, Inc.",FISV,Not Halal,
+CSX Corporation,CSX,Not Halal,
+"Moderna, Inc.",MRNA,Not Halal,
+"Palo Alto Networks, Inc.",PANW,Not Halal,
+"American Electric Power Company, Inc.",AEP,Not Halal,
+The Kraft Heinz Company,KHC,Not Halal,
+"MercadoLibre, Inc.",MELI,Not Halal,
+Exelon Corporation,EXC,Not Halal,
+Xcel Energy Inc.,XEL,Not Halal,
+PACCAR Inc.,PCAR,Not Halal,
+"Walgreens Boots Alliance, Inc.",WBA,Not Halal,
+Constellation Energy Corporation,CEG,Not Halal,
+"Verisk Analytics, Inc.",VRSK,Not Halal,
+Sirius XM Holdings Inc.,SIRI,Not Halal,
+"Lucid Group, Inc.",LCID,Not Halal,
