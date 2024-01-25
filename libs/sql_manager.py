@@ -15,22 +15,12 @@ def get_creds_local():
     con = f'mysql+pymysql://{username}:{password}@{server}/{database}'
     return con
 
-def get_creds_cloud():
-    server = logins.server
-    database =  logins.database
-    username =  logins.username
-    password = logins.password  
-    port = 3306
-
-    con = f'mysql+pymysql://{username}:{password}@{server}/{database}'
-    return con
 
 def connect():
     engine = create_engine(
             get_creds_local(), 
             pool_recycle=3600)
     return engine
-
 
 
 def indexes_table():

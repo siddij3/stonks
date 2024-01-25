@@ -62,8 +62,6 @@ def get_indexes():
        "id": int(time.time())
        }
 
-    # project_id = logins.project_id
-    # table_id = f"{logins.database}.{logins.io_raw}"
     def fix_datetime(df, pd):
         df['date_time'] = pd.to_datetime(df['date_time'])
         return df
