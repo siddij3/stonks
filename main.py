@@ -1,10 +1,11 @@
-# https://colab.research.google.com/drive/1qMgLSij0pdwW56cu3ZEtHvLdx3gur4S5#scrollTo=C1MZOKB3Sg0X
 
-import implied_open
-import quotes
-import sql_manager
+import libs.implied_open as implied_open
+import libs.quotes as quotes
+import libs.sql_manager as sql_manager
+import schedule
 from apscheduler.schedulers.blocking import BlockingScheduler
 
+import time
 from datetime import datetime, timedelta
 from pytz import timezone
 
@@ -27,11 +28,6 @@ def loop():
 
 
 if __name__ == '__main__':
-
     scheduler = BlockingScheduler()
-    scheduler.add_job(loop, 'interval', hours=0.5)
+    scheduler.add_job(loop, 'interval', hours=1)
     scheduler.start()
-
-
-
-

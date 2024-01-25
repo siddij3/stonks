@@ -2,7 +2,7 @@ import tensorflow as tf
 import os
 import pandas as pd
 import numpy as np
-import sql_manager
+import libs.sql_manager as sql_manager
 import sql_queries
 
 from tensorflow.keras.models import Sequential
@@ -10,7 +10,7 @@ from tensorflow.keras.layers import InputLayer
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import RNN
-from tensorflow.keras.layers import CNN
+# from tensorflow.keras.layers import CNN
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras.losses import MeanSquaredError
 from tensorflow.keras.metrics import RootMeanSquaredError
@@ -50,6 +50,10 @@ def windowed_df_to_date_X_y(windowed_dataframe):
     print()
     
     dates = df_as_np[:, 0]
+    # TODO
+    # [[[1, a, !,], [2, b, @], [3, , ], [4, , ], [5]]] [6]
+    # [[[2], [3], [4], [5], [6]]] [7]
+    # [[[3], [4], [5], [6], [7]]] [8]
 
     middle_matrix = df_as_np[:, 2:]
     X = middle_matrix.reshape((len(dates), middle_matrix.shape[1], 1))
@@ -95,7 +99,7 @@ if __name__ == '__main__':
 
     dates, X, y = windowed_df_to_date_X_y(nvdia_ts)
 
-    print(dates)
+    print(X)
 
     exit()
 
