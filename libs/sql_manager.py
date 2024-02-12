@@ -2,8 +2,6 @@ import pandas as pd
 
 from sqlalchemy import create_engine
 from sqlalchemy import text
-import logins
-
 
 def get_creds_local():
     server = 'localhost' 
